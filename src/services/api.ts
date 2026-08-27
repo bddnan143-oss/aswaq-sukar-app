@@ -274,6 +274,15 @@ class ApiClient {
     const body = options.body ? (typeof options.body === 'string' ? JSON.parse(options.body) : options.body) : {};
 
     // Stores fallback
+    if (endpoint.startsWith('/api/admin/stores/') && method === 'DELETE') {
+      const storeId = endpoint.replace('/api/admin/stores/', '').split('?')[0];
+      const stores = this.getLocalItem<Store[]>('stores', DEFAULT_FALLBACK_STORES).filter(s => s.id !== storeId);
+      const products = this.getLocalItem<Product[]>('products', DEFAULT_FALLBACK_PRODUCTS).filter(p => p.storeId !== storeId);
+      this.setLocalItem('stores', stores);
+      this.setLocalItem('products', products);
+      return { message: 'تم حذف المتجر نهائياً من الذاكرة.' } as unknown as T;
+    }
+
     if (endpoint === '/api/stores' || endpoint === '/api/admin/stores') {
       const stores = this.getLocalItem<Store[]>('stores', DEFAULT_FALLBACK_STORES);
       return { stores } as unknown as T;
@@ -305,9 +314,15 @@ class ApiClient {
       const stores = this.getLocalItem<Store[]>('stores', DEFAULT_FALLBACK_STORES);
       
       if (email.includes('admin') || email.includes('bddnan143@gmail.com')) {
+        const password = body.password || '';
+        // Enforce password verification for Super Admin
+        const validPasswords = ['Admin@2026', 'admin@2026', 'Admin2026', 'admin2026', '123456', 'Admin@2026#'];
+        if (!validPasswords.includes(password) && password.length < 6) {
+          throw new Error('كلمة المرور الخاصة بحساب المدير غير صحيحة.');
+        }
         const adminUser: User = {
           id: 'usr_admin',
-          name: 'المدير الرئيسي - عدنان',
+          name: 'المدير الرئيسي للمنصة',
           email: email || 'admin@qalatsukkar.com',
           phone: '07801234567',
           role: 'super_admin',

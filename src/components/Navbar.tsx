@@ -11,9 +11,7 @@ import {
   Sparkles, 
   MapPin,
   Menu,
-  X,
-  Download,
-  FileCode
+  X
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
@@ -89,19 +87,6 @@ export const Navbar: React.FC<NavbarProps> = ({
 
         {/* Right Actions */}
         <div className="flex items-center gap-2 sm:gap-2.5">
-          {/* Direct index.html Download Button */}
-          <a
-            id="nav-download-standalone-html"
-            href="/standalone.html"
-            download="index.html"
-            className="flex items-center gap-1.5 rounded-2xl bg-amber-500 hover:bg-amber-600 text-slate-950 font-black px-3 py-1.5 sm:px-3.5 sm:py-2 text-xs shadow-sm hover:scale-105 active:scale-95 transition-all"
-            title="تنزيل ملف الواجهة index.html المستقل بالكامل بنقرة واحدة"
-          >
-            <Download className="h-4 w-4" />
-            <span className="hidden sm:inline">تحميل index.html</span>
-            <span className="sm:hidden">index.html</span>
-          </a>
-
           {/* Quick PWA Install Button */}
           <InstallPwaPrompt mode="button" />
 

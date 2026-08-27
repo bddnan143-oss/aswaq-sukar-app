@@ -9,9 +9,7 @@ import {
   ShoppingBag, 
   Compass, 
   SlidersHorizontal,
-  ChevronLeft,
-  Download,
-  FileCode
+  ChevronLeft
 } from 'lucide-react';
 import { Store as StoreType, Product } from '../types';
 import { api } from '../services/api';
@@ -122,28 +120,6 @@ export const CustomerHomeView: React.FC<CustomerHomeViewProps> = ({
               </button>
             </div>
           </form>
-
-          {/* Direct index.html Download Action Banner */}
-          <div className="mt-5 max-w-xl mx-auto flex flex-col sm:flex-row items-center justify-center gap-3">
-            <a
-              id="hero-download-index-html-btn"
-              href="/standalone.html"
-              download="index.html"
-              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-2xl bg-amber-400 hover:bg-amber-300 text-slate-950 px-5 py-2.5 text-xs sm:text-sm font-black shadow-lg shadow-amber-950/20 transition-all hover:scale-105 active:scale-95 border border-amber-300"
-            >
-              <Download className="h-4 w-4 text-slate-950" />
-              <span>تحميل ملف الواجهة المدمج (index.html) مباشرة</span>
-            </a>
-            <a
-              id="hero-preview-index-html-link"
-              href="/standalone.html"
-              target="_blank"
-              rel="noreferrer"
-              className="text-xs font-bold text-emerald-200 hover:text-white underline underline-offset-4 transition"
-            >
-              معاينة النسخة المستقلة في نافذة جديدة ↗
-            </a>
-          </div>
         </div>
       </section>
 

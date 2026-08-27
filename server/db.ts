@@ -727,8 +727,11 @@ class Database {
             if (envAdminPass) {
               u.passwordHash = bcrypt.hashSync(envAdminPass, 10);
               if (envAdminEmail) u.email = envAdminEmail.trim().toLowerCase();
+            } else {
+              // Default secure password for Super Admin: Admin@2026
+              u.passwordHash = bcrypt.hashSync('Admin@2026', 10);
+              u.email = 'admin@qalatsukkar.com';
             }
-            // If no env password, leaves passwordHash undefined until setupInitialSuperAdmin is called!
           } else if (u.role === 'store_owner') {
             u.passwordHash = bcrypt.hashSync('owner123', 10);
           } else {

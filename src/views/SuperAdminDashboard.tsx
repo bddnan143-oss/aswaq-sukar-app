@@ -32,15 +32,14 @@ import {
   ExternalLink,
   ChevronRight,
   TrendingUp,
-  RotateCcw,
-  FolderArchive
+  RotateCcw
 } from 'lucide-react';
 import { Store as StoreType, User, Subscription, ActivationCode, Product, Order, OrderStatus, PlatformStats } from '../types';
 import { api } from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import { ImageUploadField } from '../components/ImageUploadField';
 import { SyncStatusBadge } from '../components/SyncStatusBadge';
-import { DownloadSourceModal } from '../components/DownloadSourceModal';
+import { syncService } from '../services/localStorageSync';
 
 export const SuperAdminDashboard: React.FC = () => {
   const { user, isLoading: isAuthLoading } = useAuth();
@@ -60,7 +59,6 @@ export const SuperAdminDashboard: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [actionSuccess, setActionSuccess] = useState<string | null>(null);
   const [actionError, setActionError] = useState<string | null>(null);
-  const [showDownloadModal, setShowDownloadModal] = useState(false);
 
   // Search & Filters
   const [storeSearch, setStoreSearch] = useState('');
@@ -236,19 +234,47 @@ export const SuperAdminDashboard: React.FC = () => {
 
   const handleConfirmPermanentDelete = async () => {
     if (!storeToDelete) return;
+    const deletedStoreId = storeToDelete.id;
+    const deletedStoreName = storeToDelete.name;
     const confirm = deleteConfirmationText.trim();
-    if (confirm !== storeToDelete.name && confirm !== 'حذف' && confirm !== 'delete') {
+    if (confirm !== deletedStoreName && confirm !== 'حذف' && confirm !== 'delete') {
       showNotification('يرجى كتابة اسم المتجر بدقة أو كلمة "حذف" لتأكيد الحذف النهائي.', true);
       return;
     }
 
     setIsDeletingStore(true);
     try {
-      await api.deleteStorePermanently(storeToDelete.id, confirm);
-      setStores(stores.filter((s) => s.id !== storeToDelete.id));
+      // 1. Send delete request to backend
+      await api.deleteStorePermanently(deletedStoreId, confirm);
+
+      // 2. Immediately purge deleted store and associated products from local component state
+      setStores((prevStores) => prevStores.filter((s) => s.id !== deletedStoreId));
+      setProducts((prevProducts) => prevProducts.filter((p) => p.storeId !== deletedStoreId));
+      setOwners((prevOwners) => prevOwners.filter((o) => o.storeId !== deletedStoreId && o.store?.id !== deletedStoreId));
+      setSubscriptions((prevSubs) => prevSubs.filter((sub) => sub.storeId !== deletedStoreId));
+
+      // 3. Immediately purge from browser localStorage snapshot so UI reflects it everywhere
+      try {
+        const localSnapshot = syncService.getLocalSnapshot();
+        if (localSnapshot) {
+          if (Array.isArray(localSnapshot.stores)) {
+            localSnapshot.stores = localSnapshot.stores.filter((s: any) => s.id !== deletedStoreId);
+          }
+          if (Array.isArray(localSnapshot.products)) {
+            localSnapshot.products = localSnapshot.products.filter((p: any) => p.storeId !== deletedStoreId);
+          }
+          if (Array.isArray(localSnapshot.subscriptions)) {
+            localSnapshot.subscriptions = localSnapshot.subscriptions.filter((sub: any) => sub.storeId !== deletedStoreId);
+          }
+          syncService.saveSnapshotLocally(localSnapshot);
+        }
+      } catch (storageErr) {
+        console.warn('LocalStorage cleanup warning:', storageErr);
+      }
+
       setStoreToDelete(null);
       setDeleteConfirmationText('');
-      showNotification(`تم حذف متجر (${storeToDelete.name}) وكافة بياناته المرتبطة نهائياً.`);
+      showNotification(`تم حذف متجر (${deletedStoreName}) وكافة بياناته المرتبطة نهائياً.`);
       await loadAdminData();
     } catch (err: any) {
       showNotification(err.message || 'فشل حذف المتجر.', true);
@@ -499,17 +525,6 @@ export const SuperAdminDashboard: React.FC = () => {
         </div>
 
         <div className="flex items-center gap-2 flex-wrap">
-          <button
-            id="btn-download-source-zip-superadmin"
-            type="button"
-            onClick={() => setShowDownloadModal(true)}
-            className="inline-flex items-center gap-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white px-3.5 py-2 text-xs font-bold active:scale-95 transition shadow-sm"
-            title="تنزيل الكود المصدري للمشروع كاملاً كملف ZIP"
-          >
-            <FolderArchive className="h-3.5 w-3.5" />
-            <span>تنزيل كود المشروع (ZIP)</span>
-          </button>
-
           <button
             type="button"
             onClick={loadAdminData}
@@ -2055,12 +2070,6 @@ export const SuperAdminDashboard: React.FC = () => {
           </div>
         </div>
       )}
-
-      {/* Download Source Code Modal (Super Admin Exclusive) */}
-      <DownloadSourceModal
-        isOpen={showDownloadModal}
-        onClose={() => setShowDownloadModal(false)}
-      />
 
     </div>
   );
