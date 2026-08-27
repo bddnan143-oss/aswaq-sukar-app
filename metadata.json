@@ -1,0 +1,6 @@
+{
+  "name": "أسواق قلعة سكر",
+  "description": "منصة وسوق رقمي محلي متكامل يجمع أصحاب المتاجر والزبائن في مدينة قلعة سكر في مكان واحد.",
+  "requestFramePermissions": ["geolocation", "camera"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

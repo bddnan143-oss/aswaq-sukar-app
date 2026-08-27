@@ -1,0 +1,40 @@
+@import "tailwindcss";
+
+/* GLOBAL PRINT STYLES FOR MOBILE AND DESKTOP PDF EXPORT */
+@media screen {
+  #print-root-container {
+    display: none !important;
+  }
+}
+
+@media print {
+  /* Hide standard web UI elements */
+  body > *:not(#print-root-container) {
+    display: none !important;
+  }
+
+  /* Make print root visible and take full A4 sheet */
+  #print-root-container {
+    display: block !important;
+    position: static !important;
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    background: #ffffff !important;
+    color: #0f172a !important;
+  }
+
+  html, body {
+    background: #ffffff !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+    color-adjust: exact !important;
+  }
+
+  @page {
+    size: A4 portrait;
+    margin: 10mm 10mm 10mm 10mm;
+  }
+}

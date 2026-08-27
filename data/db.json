@@ -1,0 +1,637 @@
+{
+  "users": [
+    {
+      "id": "usr_admin",
+      "name": "المدير الرئيسي للمنصة",
+      "phone": "07801234567",
+      "email": "admin@qalatsukkar.com",
+      "role": "super_admin",
+      "status": "active",
+      "createdAt": "2026-01-01T00:00:00.000Z"
+    },
+    {
+      "id": "usr_owner_1",
+      "name": "أحمد الشمري",
+      "phone": "07802223334",
+      "email": "ahmed@store.com",
+      "role": "store_owner",
+      "storeId": "store_1",
+      "status": "active",
+      "createdAt": "2026-01-10T00:00:00.000Z",
+      "passwordHash": "$2b$10$1v4uBq6nJq1ZVNx5YhQxveG.kgdMIoht0FpgJrK1b/evPLVcWTrzG"
+    },
+    {
+      "id": "usr_owner_2",
+      "name": "علي الحسيني",
+      "phone": "07805556667",
+      "email": "ali@store.com",
+      "role": "store_owner",
+      "storeId": "store_2",
+      "status": "active",
+      "createdAt": "2026-01-15T00:00:00.000Z",
+      "passwordHash": "$2b$10$W5LxypuMWQ1SMu3KyjuYiOJwkTaFAUYOz1T/Gmb/Zr9JqTHN2Y16O"
+    },
+    {
+      "id": "usr_owner_3",
+      "name": "حسين السعدي",
+      "phone": "07807778889",
+      "email": "hussein@store.com",
+      "role": "store_owner",
+      "storeId": "store_3",
+      "status": "active",
+      "createdAt": "2026-02-01T00:00:00.000Z",
+      "passwordHash": "$2b$10$6BwsMZEb9IMwq/EGWY74Q.9MlWwQNgRsqUZX0DCvoPL0th.oVpQHm"
+    },
+    {
+      "id": "usr_owner_4",
+      "name": "د. سجاد الخفاجي",
+      "phone": "07809990001",
+      "email": "sajjad@store.com",
+      "role": "store_owner",
+      "storeId": "store_4",
+      "status": "active",
+      "createdAt": "2026-02-10T00:00:00.000Z",
+      "passwordHash": "$2b$10$UiGFpweSMnzAgT1b7kTkJ.09a..q2klperqXyeJMQro.kMXwAA/GW"
+    },
+    {
+      "id": "usr_customer_1",
+      "name": "حيدر الموسوي",
+      "phone": "07701112233",
+      "email": "customer@gmail.com",
+      "role": "customer",
+      "status": "active",
+      "createdAt": "2026-02-05T00:00:00.000Z",
+      "passwordHash": "$2b$10$Fn4i0uFmJP35uYKjTS3t/.FhuEt4Qrfmr33umROfcBWv3ObvxDgyS"
+    },
+    {
+      "id": "usr_customer_2",
+      "name": "كرار البدري",
+      "phone": "07704445566",
+      "email": "karrar@gmail.com",
+      "role": "customer",
+      "status": "active",
+      "createdAt": "2026-02-12T00:00:00.000Z",
+      "passwordHash": "$2b$10$CYKjSIAHZQjhIdQ1fQXrrugEeO25upnXhhGdMwE67rRU1EWea0YkO"
+    }
+  ],
+  "stores": [
+    {
+      "id": "store_1",
+      "ownerId": "usr_owner_1",
+      "ownerName": "أحمد الشمري",
+      "name": "أسواق الفرات الغذائية",
+      "logo": "https://images.unsplash.com/photo-1542838132-92c53300491e?w=200&auto=format&fit=crop&q=80",
+      "banner": "https://images.unsplash.com/photo-1578916171728-46686eac8d58?w=800&auto=format&fit=crop&q=80",
+      "category": "مواد غذائية وماركت",
+      "description": "أكبر مركز للمواد الغذائية والمنظفات والألبان الطازجة في قلعة سكر - أسعار جملة ومفرد وتجهيز فوري.",
+      "phone": "07802223334",
+      "workingHours": "8:00 ص - 11:30 م (يومياً)",
+      "address": "قلعة سكر - الشارع العام، قرب فلكة الساعة",
+      "location": {
+        "lat": 31.8617,
+        "lng": 46.0698,
+        "addressName": "شارع السوق الكبير، قرب فلكة الساعة"
+      },
+      "subscriptionStatus": "active",
+      "subscriptionEndDate": "2026-12-31",
+      "status": "active",
+      "createdAt": "2026-01-10T00:00:00.000Z"
+    },
+    {
+      "id": "store_2",
+      "ownerId": "usr_owner_2",
+      "ownerName": "علي الحسيني",
+      "name": "مجمع النور للأجهزة والموبايل",
+      "logo": "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=200&auto=format&fit=crop&q=80",
+      "banner": "https://images.unsplash.com/photo-1550009158-9ebf69173e03?w=800&auto=format&fit=crop&q=80",
+      "category": "إلكترونيات وموبايل",
+      "description": "أحدث الهواتف الذكية والإكسسوارات الأصلية والأجهزة المنزلية مع ضمان حقيقي وخدمات صيانة متخصصة.",
+      "phone": "07805556667",
+      "workingHours": "9:00 ص - 10:00 م",
+      "address": "قلعة سكر - مقابل مدرسة الفراهيدي للبنين",
+      "location": {
+        "lat": 31.8578,
+        "lng": 46.0711,
+        "addressName": "مقابل مدرسة الفراهيدي للبنين"
+      },
+      "subscriptionStatus": "active",
+      "subscriptionEndDate": "2026-11-30",
+      "status": "active",
+      "createdAt": "2026-01-15T00:00:00.000Z"
+    },
+    {
+      "id": "store_3",
+      "ownerId": "usr_owner_3",
+      "ownerName": "حسين السعدي",
+      "name": "قصابة البركة للحوم الطازجة",
+      "logo": "https://images.unsplash.com/photo-1551028719-00167b16eac5?w=200&auto=format&fit=crop&q=80",
+      "banner": "https://images.unsplash.com/photo-1607623814075-e51df1bdc82f?w=800&auto=format&fit=crop&q=80",
+      "category": "لحوم وقصابة",
+      "description": "لحوم غنم وعجل محلية طازجة ذبح يومي تحت إشراف صحي - فرم وتتبيل وتجهيز ولائم.",
+      "phone": "07807778889",
+      "workingHours": "7:00 ص - 9:00 م",
+      "address": "قلعة سكر - سوق اللحوم، فرع القصابين",
+      "location": {
+        "lat": 31.8608,
+        "lng": 46.0664,
+        "addressName": "سوق اللحوم المركزي"
+      },
+      "subscriptionStatus": "active",
+      "subscriptionEndDate": "2026-10-15",
+      "status": "active",
+      "createdAt": "2026-02-01T00:00:00.000Z"
+    },
+    {
+      "id": "store_4",
+      "ownerId": "usr_owner_4",
+      "ownerName": "د. سجاد الخفاجي",
+      "name": "صيدلية الشفاء المركزية",
+      "logo": "https://images.unsplash.com/photo-1587854692152-cbe660dbde88?w=200&auto=format&fit=crop&q=80",
+      "banner": "https://images.unsplash.com/photo-1631549916768-4119b2e5f926?w=800&auto=format&fit=crop&q=80",
+      "category": "صيدلية وعناية",
+      "description": "كافة الأدوية والمستلزمات الطبية وحليب وأغذية الأطفال ومنتجات العناية بالبشرة مع استشارات دوائية.",
+      "phone": "07809990001",
+      "workingHours": "8:00 ص - 12:00 منتصف الليل",
+      "address": "قلعة سكر - شارع الأطباء، قرب المستوصف",
+      "location": {
+        "lat": 31.8587,
+        "lng": 46.0672,
+        "addressName": "شارع الأطباء، قرب المستوصف"
+      },
+      "subscriptionStatus": "active",
+      "subscriptionEndDate": "2026-12-01",
+      "status": "active",
+      "createdAt": "2026-02-10T00:00:00.000Z"
+    }
+  ],
+  "products": [
+    {
+      "id": "prod_101",
+      "storeId": "store_1",
+      "storeName": "أسواق الفرات الغذائية",
+      "name": "بيبسي عائلي 1.25 لتر",
+      "description": "مشروب غازي بيبسي أصلي حجم عائلي مثلج.",
+      "price": 1500,
+      "image": "https://images.unsplash.com/photo-1629203851122-3726ecdf080e?w=400&auto=format&fit=crop&q=80",
+      "category": "مشروبات وعصائر",
+      "stockQuantity": 45,
+      "minStockAlert": 10,
+      "isAvailable": true,
+      "isOffer": true,
+      "discountPrice": 1250,
+      "createdAt": "2026-01-11T00:00:00.000Z"
+    },
+    {
+      "id": "prod_102",
+      "storeId": "store_1",
+      "storeName": "أسواق الفرات الغذائية",
+      "name": "أرز بسمتي محمود 5 كغم",
+      "description": "أرز بسمتي هندي عنبر درجة أولى حبة طويلة فاخرة.",
+      "price": 14000,
+      "image": "https://images.unsplash.com/photo-1586201375761-83865001e31c?w=400&auto=format&fit=crop&q=80",
+      "category": "مواد غذائية وتموينية",
+      "stockQuantity": 28,
+      "minStockAlert": 5,
+      "isAvailable": true,
+      "createdAt": "2026-01-11T00:00:00.000Z"
+    },
+    {
+      "id": "prod_103",
+      "storeId": "store_1",
+      "storeName": "أسواق الفرات الغذائية",
+      "name": "زيت طعام زير 1 لتر",
+      "description": "زيت ذرة نقي عالي الجودة للطبخ والقلي.",
+      "price": 3250,
+      "image": "https://images.unsplash.com/photo-1474979266404-7eaacbcd87c5?w=400&auto=format&fit=crop&q=80",
+      "category": "مواد غذائية وتموينية",
+      "stockQuantity": 60,
+      "minStockAlert": 12,
+      "isAvailable": true,
+      "createdAt": "2026-01-12T00:00:00.000Z"
+    },
+    {
+      "id": "prod_104",
+      "storeId": "store_1",
+      "storeName": "أسواق الفرات الغذائية",
+      "name": "لبن أربيل 1 كغم",
+      "description": "لبن رائب طازج كامل الدسم طعم عراقي أصيل.",
+      "price": 2000,
+      "image": "https://images.unsplash.com/photo-1563636619-e9143da7973b?w=400&auto=format&fit=crop&q=80",
+      "category": "ألبان وأجبان",
+      "stockQuantity": 4,
+      "minStockAlert": 6,
+      "isAvailable": true,
+      "createdAt": "2026-01-13T00:00:00.000Z"
+    },
+    {
+      "id": "prod_201",
+      "storeId": "store_2",
+      "storeName": "مجمع النور للأجهزة والموبايل",
+      "name": "بيبسي عائلي 1.25 لتر",
+      "description": "مشروب غازي منعش 1.25 لتر متوفر في ركن المشروبات بالمجمع.",
+      "price": 1750,
+      "image": "https://images.unsplash.com/photo-1629203851122-3726ecdf080e?w=400&auto=format&fit=crop&q=80",
+      "category": "مشروبات وسناكات",
+      "stockQuantity": 20,
+      "minStockAlert": 5,
+      "isAvailable": true,
+      "createdAt": "2026-01-16T00:00:00.000Z"
+    },
+    {
+      "id": "prod_202",
+      "storeId": "store_2",
+      "storeName": "مجمع النور للأجهزة والموبايل",
+      "name": "شاحن سريع Anker 20W Type-C",
+      "description": "شاحن أنكر أصلي يدعم الشحن السريع للآيفون وسامسونج مع كفالة سنة.",
+      "price": 18000,
+      "image": "https://images.unsplash.com/photo-1583863788434-e58a36330cf0?w=400&auto=format&fit=crop&q=80",
+      "category": "إلكترونيات وإكسسوارات",
+      "stockQuantity": 15,
+      "minStockAlert": 4,
+      "isAvailable": true,
+      "isOffer": true,
+      "discountPrice": 15000,
+      "createdAt": "2026-01-16T00:00:00.000Z"
+    },
+    {
+      "id": "prod_203",
+      "storeId": "store_2",
+      "storeName": "مجمع النور للأجهزة والموبايل",
+      "name": "سماعة بلوتوث لاسلكية Earbuds Pro",
+      "description": "سماعات عازلة للضوضاء بصوت نقي وبطارية تدوم حتى 24 ساعة.",
+      "price": 25000,
+      "image": "https://images.unsplash.com/photo-1590658268037-6bf12165a8df?w=400&auto=format&fit=crop&q=80",
+      "category": "إلكترونيات وإكسسوارات",
+      "stockQuantity": 8,
+      "minStockAlert": 3,
+      "isAvailable": true,
+      "createdAt": "2026-01-18T00:00:00.000Z"
+    },
+    {
+      "id": "prod_301",
+      "storeId": "store_3",
+      "storeName": "قصابة البركة للحوم الطازجة",
+      "name": "لحم غنم محلي طازج 1 كغم",
+      "description": "لحم خروف عراقي طازج ذبح اليوم بالعظم أو بدون عظم حسب الطلب.",
+      "price": 22000,
+      "image": "https://images.unsplash.com/photo-1603048588665-791ca8aea617?w=400&auto=format&fit=crop&q=80",
+      "category": "لحوم طازجة",
+      "stockQuantity": 30,
+      "minStockAlert": 5,
+      "isAvailable": true,
+      "createdAt": "2026-02-02T00:00:00.000Z"
+    },
+    {
+      "id": "prod_302",
+      "storeId": "store_3",
+      "storeName": "قصابة البركة للحوم الطازجة",
+      "name": "لحم مفروم كباب عراقي جاهز 1 كغم",
+      "description": "لحم غنم مخلوط بلية ناعمة متبل وجاهز للشيش والشوي.",
+      "price": 23000,
+      "image": "https://images.unsplash.com/photo-1551028719-00167b16eac5?w=400&auto=format&fit=crop&q=80",
+      "category": "لحوم طازجة",
+      "stockQuantity": 18,
+      "minStockAlert": 4,
+      "isAvailable": true,
+      "createdAt": "2026-02-02T00:00:00.000Z"
+    },
+    {
+      "id": "prod_401",
+      "storeId": "store_4",
+      "storeName": "صيدلية الشفاء المركزية",
+      "name": "فيتامين C فوار 1000mg",
+      "description": "مكمل غذائي لتعزيز المناعة بنكهة البرتقال الطبيعي (20 قرص).",
+      "price": 4500,
+      "image": "https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=400&auto=format&fit=crop&q=80",
+      "category": "فيتامينات ومكملات",
+      "stockQuantity": 40,
+      "minStockAlert": 8,
+      "isAvailable": true,
+      "createdAt": "2026-02-11T00:00:00.000Z"
+    },
+    {
+      "id": "prod_402",
+      "storeId": "store_4",
+      "storeName": "صيدلية الشفاء المركزية",
+      "name": "مرطب بشرة سيتافيل 250 مل",
+      "description": "كريم مرطب طبي فائق الترطيب للبشرة الجافة والحساسة.",
+      "price": 16000,
+      "image": "https://images.unsplash.com/photo-1556228720-195a672e8a03?w=400&auto=format&fit=crop&q=80",
+      "category": "عناية بالبشرة",
+      "stockQuantity": 12,
+      "minStockAlert": 3,
+      "isAvailable": true,
+      "createdAt": "2026-02-11T00:00:00.000Z"
+    }
+  ],
+  "orders": [
+    {
+      "id": "ord_101",
+      "orderNumber": "QS-1021",
+      "customerId": "usr_customer_1",
+      "customerName": "حيدر الموسوي",
+      "customerPhone": "07701112233",
+      "storeId": "store_1",
+      "storeName": "أسواق الفرات الغذائية",
+      "storePhone": "07802223334",
+      "items": [
+        {
+          "productId": "prod_101",
+          "productName": "بيبسي عائلي 1.25 لتر",
+          "productImage": "https://images.unsplash.com/photo-1629203851122-3726ecdf080e?w=400&auto=format&fit=crop&q=80",
+          "price": 1250,
+          "quantity": 2,
+          "subtotal": 2500
+        },
+        {
+          "productId": "prod_102",
+          "productName": "أرز بسمتي محمود 5 كغم",
+          "productImage": "https://images.unsplash.com/photo-1586201375761-83865001e31c?w=400&auto=format&fit=crop&q=80",
+          "price": 14000,
+          "quantity": 1,
+          "subtotal": 14000
+        }
+      ],
+      "totalAmount": 16500,
+      "notes": "يرجى وضع الأغراض في كيس محكم للاستلام بعد صلاة العصر.",
+      "status": "preparing",
+      "statusHistory": [
+        {
+          "status": "new",
+          "timestamp": "2026-08-24T04:59:57.084Z",
+          "note": "تم إرسال الطلب من الزبون"
+        },
+        {
+          "status": "preparing",
+          "timestamp": "2026-08-24T05:59:57.084Z",
+          "note": "تم قبول الطلب وجاري تجهيز المواد"
+        }
+      ],
+      "createdAt": "2026-08-24T04:59:57.084Z",
+      "updatedAt": "2026-08-24T05:59:57.084Z"
+    },
+    {
+      "id": "ord_102",
+      "orderNumber": "QS-1022",
+      "customerId": "usr_customer_1",
+      "customerName": "حيدر الموسوي",
+      "customerPhone": "07701112233",
+      "storeId": "store_3",
+      "storeName": "قصابة البركة للحوم الطازجة",
+      "storePhone": "07807778889",
+      "items": [
+        {
+          "productId": "prod_301",
+          "productName": "لحم غنم محلي طازج 1 كغم",
+          "productImage": "https://images.unsplash.com/photo-1603048588665-791ca8aea617?w=400&auto=format&fit=crop&q=80",
+          "price": 22000,
+          "quantity": 1,
+          "subtotal": 22000
+        }
+      ],
+      "totalAmount": 22000,
+      "notes": "تقطيع لحم صغار للمرق مع قليل من الشحم.",
+      "status": "completed",
+      "statusHistory": [
+        {
+          "status": "new",
+          "timestamp": "2026-08-22T06:59:57.084Z"
+        },
+        {
+          "status": "preparing",
+          "timestamp": "2026-08-22T07:29:57.084Z"
+        },
+        {
+          "status": "ready_for_pickup",
+          "timestamp": "2026-08-22T07:59:57.084Z"
+        },
+        {
+          "status": "completed",
+          "timestamp": "2026-08-22T08:59:57.084Z",
+          "note": "تم تسليم الطلب للزبون باليد"
+        }
+      ],
+      "createdAt": "2026-08-22T06:59:57.084Z",
+      "updatedAt": "2026-08-22T08:59:57.084Z"
+    }
+  ],
+  "debts": [
+    {
+      "id": "debt_101",
+      "storeId": "store_1",
+      "debtorName": "أبو كرار العقيلي",
+      "debtorPhone": "07801122334",
+      "amount": 45000,
+      "paidAmount": 20000,
+      "remainingAmount": 25000,
+      "details": "قائمة مسواك شهري مواد غذائية وزيت وتمن.",
+      "date": "2026-02-01",
+      "status": "partially_paid",
+      "payments": [
+        {
+          "id": "pay_1",
+          "amount": 20000,
+          "date": "2026-02-15",
+          "note": "تسديد دفعة مع الراتب"
+        }
+      ],
+      "createdAt": "2026-02-01T00:00:00.000Z"
+    },
+    {
+      "id": "debt_102",
+      "storeId": "store_1",
+      "debtorName": "سيد مهدي",
+      "debtorPhone": "07804455667",
+      "amount": 18500,
+      "paidAmount": 0,
+      "remainingAmount": 18500,
+      "details": "صندوقين حليب مع كارتون معجون طماطة.",
+      "date": "2026-02-10",
+      "status": "unpaid",
+      "payments": [],
+      "createdAt": "2026-02-10T00:00:00.000Z"
+    },
+    {
+      "id": "debt_201",
+      "storeId": "store_2",
+      "debtorName": "أستاذ حامد المعلم",
+      "debtorPhone": "07809988776",
+      "amount": 60000,
+      "paidAmount": 30000,
+      "remainingAmount": 30000,
+      "details": "شاحن أصلي مع سماعة بلوتوث وباور بانك.",
+      "date": "2026-01-25",
+      "status": "partially_paid",
+      "payments": [
+        {
+          "id": "pay_2",
+          "amount": 30000,
+          "date": "2026-02-05",
+          "note": "دفعة أولى عند الاستلام"
+        }
+      ],
+      "createdAt": "2026-01-25T00:00:00.000Z"
+    }
+  ],
+  "sales": [
+    {
+      "id": "sale_101",
+      "storeId": "store_1",
+      "items": [
+        {
+          "name": "أرز بسمتي محمود 5 كغم",
+          "price": 14000,
+          "quantity": 2
+        },
+        {
+          "name": "زيت طعام زير 1 لتر",
+          "price": 3250,
+          "quantity": 4
+        }
+      ],
+      "totalAmount": 41000,
+      "paymentType": "cash",
+      "customerName": "زبون مباشر - نقد",
+      "date": "2026-02-20",
+      "notes": "بيع مباشر في المحل",
+      "createdAt": "2026-02-20T10:30:00.000Z"
+    },
+    {
+      "id": "sale_102",
+      "storeId": "store_1",
+      "items": [
+        {
+          "name": "بيبسي عائلي 1.25 لتر",
+          "price": 1250,
+          "quantity": 6
+        }
+      ],
+      "totalAmount": 7500,
+      "paymentType": "cash",
+      "customerName": "أبو فاطمة",
+      "date": "2026-02-22",
+      "createdAt": "2026-02-22T14:15:00.000Z"
+    },
+    {
+      "id": "sale_201",
+      "storeId": "store_2",
+      "items": [
+        {
+          "name": "سماعة بلوتوث لاسلكية Earbuds Pro",
+          "price": 25000,
+          "quantity": 1
+        }
+      ],
+      "totalAmount": 25000,
+      "paymentType": "cash",
+      "customerName": "زبون مباشر",
+      "date": "2026-02-21",
+      "createdAt": "2026-02-21T18:00:00.000Z"
+    }
+  ],
+  "subscriptions": [
+    {
+      "id": "sub_1",
+      "storeId": "store_1",
+      "storeName": "أسواق الفرات الغذائية",
+      "ownerName": "أحمد الشمري",
+      "planName": "الباقة السنوية المميزة",
+      "price": 150000,
+      "durationMonths": 12,
+      "startDate": "2026-01-01",
+      "endDate": "2026-12-31",
+      "status": "active",
+      "createdAt": "2026-01-01T00:00:00.000Z"
+    },
+    {
+      "id": "sub_2",
+      "storeId": "store_2",
+      "storeName": "مجمع النور للأجهزة والموبايل",
+      "ownerName": "علي الحسيني",
+      "planName": "الباقة السنوية الأساسية",
+      "price": 100000,
+      "durationMonths": 12,
+      "startDate": "2026-01-15",
+      "endDate": "2026-11-30",
+      "status": "active",
+      "createdAt": "2026-01-15T00:00:00.000Z"
+    },
+    {
+      "id": "sub_3",
+      "storeId": "store_3",
+      "storeName": "قصابة البركة للحوم الطازجة",
+      "ownerName": "حسين السعدي",
+      "planName": "الباقة نصف السنوية",
+      "price": 60000,
+      "durationMonths": 6,
+      "startDate": "2026-02-01",
+      "endDate": "2026-10-15",
+      "status": "active",
+      "createdAt": "2026-02-01T00:00:00.000Z"
+    },
+    {
+      "id": "sub_4",
+      "storeId": "store_4",
+      "storeName": "صيدلية الشفاء المركزية",
+      "ownerName": "د. سجاد الخفاجي",
+      "planName": "الباقة السنوية الأساسية",
+      "price": 100000,
+      "durationMonths": 12,
+      "startDate": "2026-02-10",
+      "endDate": "2026-12-01",
+      "status": "active",
+      "createdAt": "2026-02-10T00:00:00.000Z"
+    }
+  ],
+  "activationCodes": [
+    {
+      "id": "act_1",
+      "code": "SUKKAR-2026-VIP",
+      "maxUses": 5,
+      "usedCount": 2,
+      "usedByStoreIds": [
+        "store_1",
+        "store_2"
+      ],
+      "usedByStoreNames": [
+        "أسواق الفرات الغذائية",
+        "مجمع النور للأجهزة والموبايل"
+      ],
+      "expiresAt": "2026-12-31",
+      "status": "active",
+      "note": "رمز معتمد للمتاجر الكبيرة في قلعة سكر",
+      "createdAt": "2026-01-01T00:00:00.000Z"
+    },
+    {
+      "id": "act_2",
+      "code": "QALAT-STORE-777",
+      "maxUses": 3,
+      "usedCount": 2,
+      "usedByStoreIds": [
+        "store_3",
+        "store_4"
+      ],
+      "usedByStoreNames": [
+        "قصابة البركة للحوم الطازجة",
+        "صيدلية الشفاء المركزية"
+      ],
+      "expiresAt": "2026-12-31",
+      "status": "active",
+      "note": "رمز متاجر الخدمات الصحية واللحوم",
+      "createdAt": "2026-01-15T00:00:00.000Z"
+    },
+    {
+      "id": "act_3",
+      "code": "SUKKAR-NEW-2026",
+      "maxUses": 10,
+      "usedCount": 0,
+      "usedByStoreIds": [],
+      "usedByStoreNames": [],
+      "expiresAt": "2026-12-31",
+      "status": "active",
+      "note": "رمز تفعيل متاح لتسجيل المتاجر الجديدة",
+      "createdAt": "2026-02-01T00:00:00.000Z"
+    }
+  ],
+  "passwordResetTokens": []
+}

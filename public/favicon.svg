@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="100%" height="100%">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#047857" />
+      <stop offset="50%" stop-color="#059669" />
+      <stop offset="100%" stop-color="#10b981" />
+    </linearGradient>
+    <linearGradient id="accentGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fbbf24" />
+      <stop offset="100%" stop-color="#f59e0b" />
+    </linearGradient>
+    <filter id="dropShadow" x="-10%" y="-10%" width="130%" height="130%">
+      <feDropShadow dx="0" dy="12" stdDeviation="16" flood-color="#000000" flood-opacity="0.25" />
+    </filter>
+  </defs>
+
+  <!-- Background Rounded Rect -->
+  <rect width="512" height="512" rx="112" fill="url(#bgGrad)" />
+
+  <!-- Background Subtle Rings -->
+  <circle cx="256" cy="256" r="210" fill="none" stroke="#ffffff" stroke-opacity="0.08" stroke-width="2" />
+  <circle cx="256" cy="256" r="160" fill="none" stroke="#ffffff" stroke-opacity="0.06" stroke-width="1.5" />
+
+  <!-- Main Store / Shopping Bag / Dome Symbol -->
+  <g filter="url(#dropShadow)">
+    <!-- Shopping Bag Body -->
+    <path d="M148 180 C148 165, 160 152, 176 152 L336 152 C352 152, 364 165, 364 180 L380 376 C382 396, 366 412, 346 412 L166 412 C146 412, 130 396, 132 376 Z" fill="#ffffff" />
+    
+    <!-- Bag Handle -->
+    <path d="M204 152 L204 126 C204 98, 227 76, 256 76 C285 76, 308 98, 308 126 L308 152" fill="none" stroke="url(#accentGrad)" stroke-width="20" stroke-linecap="round" stroke-linejoin="round" />
+
+    <!-- Center Market / Palm / Castle Emblem in Emerald -->
+    <!-- Market Stall Roof -->
+    <path d="M184 220 L328 220 L316 260 L196 260 Z" fill="#059669" />
+    <path d="M196 260 C196 270, 206 278, 216 278 C226 278, 236 270, 236 260 C236 270, 246 278, 256 278 C266 278, 276 270, 276 260 C276 270, 286 278, 296 278 C306 278, 316 270, 316 260" fill="#047857" />
+
+    <!-- Arabic Palm / Spire Accent in Gold -->
+    <path d="M256 295 L256 365" stroke="#f59e0b" stroke-width="8" stroke-linecap="round" />
+    <path d="M256 310 Q225 300, 220 330" fill="none" stroke="#f59e0b" stroke-width="6" stroke-linecap="round" />
+    <path d="M256 310 Q287 300, 292 330" fill="none" stroke="#f59e0b" stroke-width="6" stroke-linecap="round" />
+    <path d="M256 330 Q232 325, 230 350" fill="none" stroke="#f59e0b" stroke-width="5" stroke-linecap="round" />
+    <path d="M256 330 Q280 325, 282 350" fill="none" stroke="#f59e0b" stroke-width="5" stroke-linecap="round" />
+    <circle cx="256" cy="295" r="7" fill="#f59e0b" />
+  </g>
+
+  <!-- Sparkle Stars -->
+  <path d="M380 120 Q395 120, 395 105 Q395 120, 410 120 Q395 120, 395 135 Q395 120, 380 120 Z" fill="#fbbf24" />
+  <path d="M110 200 Q120 200, 120 190 Q120 200, 130 200 Q120 200, 120 210 Q120 200, 110 200 Z" fill="#fbbf24" />
+</svg>
