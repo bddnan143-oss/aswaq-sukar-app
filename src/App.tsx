@@ -8,6 +8,7 @@ import { CartConflictModal } from './components/CartConflictModal';
 import { CartModal } from './components/CartModal';
 import { AuthModal } from './components/AuthModal';
 import { InstallPwaPrompt } from './components/InstallPwaPrompt';
+import { ErrorBoundary } from './components/ErrorBoundary';
 
 import { CustomerHomeView } from './views/CustomerHomeView';
 import { StoreDetailView } from './views/StoreDetailView';
@@ -35,7 +36,7 @@ const AppContent: React.FC = () => {
 
   // Auto-redirect when user logs in or role changes
   useEffect(() => {
-    if (user?.role === 'super_admin') {
+    if ((user?.role as string) === 'super_admin') {
       setCurrentView('admin');
     } else if (user?.role === 'store_owner' && currentView === 'home') {
       setCurrentView('owner');
@@ -43,9 +44,9 @@ const AppContent: React.FC = () => {
       if (currentView === 'admin' || currentView === 'owner' || currentView === 'orders') {
         setCurrentView('home');
       }
-    } else if (user.role !== 'super_admin' && currentView === 'admin') {
+    } else if ((user?.role as string) !== 'super_admin' && currentView === 'admin') {
       setCurrentView('home');
-    } else if (user.role !== 'store_owner' && currentView === 'owner') {
+    } else if ((user?.role as string) !== 'store_owner' && currentView === 'owner') {
       setCurrentView('home');
     }
   }, [user?.id, user?.role]);
@@ -212,10 +213,14 @@ const AppContent: React.FC = () => {
 
 export default function App() {
   return (
-    <AuthProvider>
-      <CartProvider>
-        <AppContent />
-      </CartProvider>
-    </AuthProvider>
+    <ErrorBoundary>
+      <AuthProvider>
+        <CartProvider>
+          <ErrorBoundary>
+            <AppContent />
+          </ErrorBoundary>
+        </CartProvider>
+      </AuthProvider>
+    </ErrorBoundary>
   );
 }

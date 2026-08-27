@@ -1,31 +1,69 @@
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
 import { Store, Product, Debt, Order, User, Subscription, ActivationCode } from '../types';
 
-// Supabase Cloud Configuration
-export const SUPABASE_URL = 
-  (typeof import.meta !== 'undefined' && (import.meta as any).env?.VITE_SUPABASE_URL) ||
-  (typeof process !== 'undefined' && (process.env as any)?.VITE_SUPABASE_URL) ||
-  (typeof process !== 'undefined' && (process.env as any)?.SUPABASE_URL) ||
-  'https://wibzacmmwgehqjhokmhn.supabase.co';
+// Supabase Cloud Configuration with Safe Fallbacks
+export const DEFAULT_SUPABASE_URL = 'https://wibzacmmwgehqjhokmhn.supabase.co';
+export const DEFAULT_SUPABASE_ANON_KEY = 'sb_publishable_KBbaO9WWeWSl9-tEpD5zHQ_vPq_KQr5';
 
-export const SUPABASE_ANON_KEY = 
-  (typeof import.meta !== 'undefined' && (import.meta as any).env?.VITE_SUPABASE_ANON_KEY) ||
-  (typeof process !== 'undefined' && (process.env as any)?.VITE_SUPABASE_ANON_KEY) ||
-  (typeof process !== 'undefined' && (process.env as any)?.SUPABASE_KEY) ||
-  'sb_publishable_KBbaO9WWeWSl9-tEpD5zHQ_vPq_KQr5';
-
-// Initialize Supabase Client
-export const supabase: SupabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
-  auth: {
-    persistSession: true,
-    autoRefreshToken: true,
-  },
-  realtime: {
-    params: {
-      eventsPerSecond: 10,
+export const getSupabaseUrl = (): string => {
+  try {
+    if (typeof import.meta !== 'undefined' && (import.meta as any).env) {
+      const url = (import.meta as any).env.VITE_SUPABASE_URL;
+      if (url && typeof url === 'string' && url.trim().length > 0) return url.trim();
     }
+  } catch (e) {}
+  try {
+    if (typeof process !== 'undefined' && process.env) {
+      const url = process.env.VITE_SUPABASE_URL || process.env.SUPABASE_URL;
+      if (url && typeof url === 'string' && url.trim().length > 0) return url.trim();
+    }
+  } catch (e) {}
+  return DEFAULT_SUPABASE_URL;
+};
+
+export const getSupabaseAnonKey = (): string => {
+  try {
+    if (typeof import.meta !== 'undefined' && (import.meta as any).env) {
+      const key = (import.meta as any).env.VITE_SUPABASE_ANON_KEY;
+      if (key && typeof key === 'string' && key.trim().length > 0) return key.trim();
+    }
+  } catch (e) {}
+  try {
+    if (typeof process !== 'undefined' && process.env) {
+      const key = process.env.VITE_SUPABASE_ANON_KEY || process.env.SUPABASE_KEY || process.env.SUPABASE_ANON_KEY;
+      if (key && typeof key === 'string' && key.trim().length > 0) return key.trim();
+    }
+  } catch (e) {}
+  return DEFAULT_SUPABASE_ANON_KEY;
+};
+
+export const SUPABASE_URL = getSupabaseUrl();
+export const SUPABASE_ANON_KEY = getSupabaseAnonKey();
+
+// Initialize Supabase Client Safely
+function initSupabaseClient(): SupabaseClient {
+  try {
+    return createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+      auth: {
+        persistSession: typeof window !== 'undefined',
+        autoRefreshToken: typeof window !== 'undefined',
+        detectSessionInUrl: false,
+      },
+      realtime: {
+        params: {
+          eventsPerSecond: 10,
+        }
+      }
+    });
+  } catch (err) {
+    console.warn('[Supabase] Warning initializing main client, falling back:', err);
+    return createClient(DEFAULT_SUPABASE_URL, DEFAULT_SUPABASE_ANON_KEY, {
+      auth: { persistSession: false },
+    });
   }
-});
+}
+
+export const supabase: SupabaseClient = initSupabaseClient();
 
 // SQL Schema for manual initialization in Supabase SQL Editor
 export const SUPABASE_SQL_SCHEMA = `
@@ -677,12 +715,26 @@ export const supabaseService = {
 
   // Realtime Live Subscription helper
   subscribeToChanges(table: 'stores' | 'products' | 'debts' | 'orders' | 'users', callback: (payload: any) => void) {
-    return supabase
-      .channel(`public:${table}`)
-      .on('postgres_changes', { event: '*', schema: 'public', table }, (payload) => {
-        callback(payload);
-      })
-      .subscribe();
+    try {
+      if (!supabase || typeof supabase.channel !== 'function') return null;
+      return supabase
+        .channel(`public:${table}`)
+        .on('postgres_changes', { event: '*', schema: 'public', table }, (payload) => {
+          try {
+            callback(payload);
+          } catch (err) {
+            console.warn(`[Supabase Realtime] error in listener for ${table}:`, err);
+          }
+        })
+        .subscribe((status) => {
+          if (status === 'SUBSCRIBED') {
+            // connection established
+          }
+        });
+    } catch (e) {
+      console.warn(`[Supabase Realtime] Subscribe error for ${table}:`, e);
+      return null;
+    }
   },
 
   // Full Cloud Sync: Syncs an entire dataset to Supabase in one operation

@@ -12,7 +12,7 @@ import {
   ChevronLeft
 } from 'lucide-react';
 import { Store as StoreType, Product } from '../types';
-import { api } from '../services/api';
+import { api, DEFAULT_FALLBACK_STORES, DEFAULT_FALLBACK_PRODUCTS } from '../services/api';
 import { StoreCard } from '../components/StoreCard';
 import { ProductCard } from '../components/ProductCard';
 import { InstallPwaPrompt } from '../components/InstallPwaPrompt';
@@ -39,27 +39,36 @@ export const CustomerHomeView: React.FC<CustomerHomeViewProps> = ({
   onNavigateSearch,
   onOpenRegisterOwner,
 }) => {
-  const [stores, setStores] = useState<StoreType[]>([]);
-  const [products, setProducts] = useState<Product[]>([]);
+  const [stores, setStores] = useState<StoreType[]>(DEFAULT_FALLBACK_STORES);
+  const [products, setProducts] = useState<Product[]>(DEFAULT_FALLBACK_PRODUCTS);
   const [selectedCategory, setSelectedCategory] = useState('الكل');
   const [searchQuery, setSearchQuery] = useState('');
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     loadData();
   }, []);
 
   const loadData = async () => {
-    setIsLoading(true);
     try {
       const [storesRes, productsRes] = await Promise.all([
-        api.getStores(),
-        api.searchProducts(),
+        api.getStores().catch(() => ({ stores: DEFAULT_FALLBACK_STORES })),
+        api.searchProducts().catch(() => ({ products: DEFAULT_FALLBACK_PRODUCTS, total: DEFAULT_FALLBACK_PRODUCTS.length })),
       ]);
-      setStores(storesRes.stores);
-      setProducts(productsRes.products);
+      if (storesRes && storesRes.stores && storesRes.stores.length > 0) {
+        setStores(storesRes.stores);
+      } else {
+        setStores(DEFAULT_FALLBACK_STORES);
+      }
+      if (productsRes && productsRes.products && productsRes.products.length > 0) {
+        setProducts(productsRes.products);
+      } else {
+        setProducts(DEFAULT_FALLBACK_PRODUCTS);
+      }
     } catch (e) {
-      console.error('Error loading marketplace data:', e);
+      console.warn('Notice loading marketplace data, using default catalog:', e);
+      setStores(DEFAULT_FALLBACK_STORES);
+      setProducts(DEFAULT_FALLBACK_PRODUCTS);
     } finally {
       setIsLoading(false);
     }

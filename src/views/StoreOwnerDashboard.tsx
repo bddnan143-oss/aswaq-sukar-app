@@ -300,7 +300,7 @@ export const StoreOwnerDashboard: React.FC = () => {
       const html = generateIndividualStatementHtml({
         storeName: store?.name || 'المتجر',
         storePhone: store?.phone,
-        storeAddress: store?.locationName || store?.address,
+        storeAddress: (store as any)?.locationName || store?.address || store?.location?.addressName,
         debt: d,
       });
       const filename = `كشف_حساب_${d.debtorName}_${store?.name || 'المتجر'}`;
@@ -314,7 +314,7 @@ export const StoreOwnerDashboard: React.FC = () => {
       printIndividualDebtStatement({
         storeName: store?.name || 'المتجر',
         storePhone: store?.phone,
-        storeAddress: store?.locationName || store?.address,
+        storeAddress: (store as any)?.locationName || store?.address || store?.location?.addressName,
         debt: d,
       });
     }
@@ -1416,7 +1416,7 @@ export const StoreOwnerDashboard: React.FC = () => {
           debt={debts.find((d) => d.id === selectedDebtorLedger.id) || selectedDebtorLedger}
           storeName={store?.name || 'متجري'}
           storePhone={store?.phone}
-          storeAddress={store?.locationName || store?.address}
+          storeAddress={(store as any)?.locationName || store?.address || store?.location?.addressName}
           onClose={() => setSelectedDebtorLedger(null)}
           onDebtUpdated={handleDebtUpdated}
           onDebtDeleted={handleDebtDeleted}
@@ -1439,7 +1439,7 @@ export const StoreOwnerDashboard: React.FC = () => {
           storeName={store?.name || 'متجري'}
           storeLogo={store?.logo}
           storePhone={store?.phone}
-          storeAddress={store?.locationName || store?.address}
+          storeAddress={(store as any)?.locationName || store?.address || store?.location?.addressName}
           products={products}
           onClose={() => setShowSaleModal(false)}
           onSaleSaved={(newSale, updatedProducts) => {

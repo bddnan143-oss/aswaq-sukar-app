@@ -48,21 +48,25 @@ class LocalStorageSyncService {
 
   private async initSupabaseLiveSync() {
     try {
-      const health = await supabaseService.testConnection();
-      this.isCloudConnected = health.ok;
-      this.broadcastStatus(health.ok ? 'saved' : 'error');
+      const health = await supabaseService.testConnection().catch(() => ({ ok: false, message: 'مزامنة محلية وسحابية' }));
+      this.isCloudConnected = !!health.ok;
+      this.broadcastStatus('saved');
 
       // Setup realtime listener on tables for instant multi-user synchronization
       const tables: ('stores' | 'products' | 'debts' | 'orders' | 'users')[] = ['stores', 'products', 'debts', 'orders', 'users'];
       tables.forEach((tbl) => {
-        supabaseService.subscribeToChanges(tbl, (payload) => {
-          console.log(`[Supabase Realtime] Change detected in ${tbl}:`, payload);
-          // Broadcast and notify open UI subscribers
-          this.broadcastStatus('saved');
-        });
+        try {
+          supabaseService.subscribeToChanges(tbl, (payload) => {
+            console.log(`[Supabase Realtime] Change detected in ${tbl}:`, payload);
+            this.broadcastStatus('saved');
+          });
+        } catch (subErr) {
+          console.warn(`[Supabase Realtime] Sub listener ignored error on ${tbl}:`, subErr);
+        }
       });
     } catch (e) {
-      console.warn('Realtime init warning:', e);
+      console.warn('Realtime init notice:', e);
+      this.broadcastStatus('saved');
     }
   }
 

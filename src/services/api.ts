@@ -15,7 +15,7 @@ import { syncService } from './localStorageSync';
 import { supabaseService } from './supabase';
 
 // Initial Seed Data for Netlify and Static Hosting Fallback
-const DEFAULT_FALLBACK_STORES: Store[] = [
+export const DEFAULT_FALLBACK_STORES: Store[] = [
   {
     id: "store_1",
     ownerId: "usr_owner_1",
@@ -132,7 +132,7 @@ const DEFAULT_FALLBACK_STORES: Store[] = [
   }
 ];
 
-const DEFAULT_FALLBACK_PRODUCTS: Product[] = [
+export const DEFAULT_FALLBACK_PRODUCTS: Product[] = [
   {
     id: "prod_1",
     storeId: "store_1",

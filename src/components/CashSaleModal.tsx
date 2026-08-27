@@ -86,7 +86,7 @@ export const CashSaleModal: React.FC<CashSaleModalProps> = ({
   const finalTotalAmount = Math.max(0, subtotalAmount - safeDiscount);
 
   // Available store products with inventory
-  const availableProducts = products.filter((p) => p.isAvailable && !p.isDeleted);
+  const availableProducts = products.filter((p) => p.isAvailable && !(p as any).isDeleted);
 
   // Handlers for Items
   const handleAddItemRow = () => {
