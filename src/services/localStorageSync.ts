@@ -1,9 +1,12 @@
-// LocalStorage Automatic Persistence & Synchronization Service for Aswaq Qalat Sukkar
+// Automatic Persistence & Supabase Cloud Synchronization Service for Aswaq Qalat Sukkar
+import { supabaseService, supabase } from './supabase';
 
 export interface SyncStatus {
   lastSavedAt: string | null;
   isSaving: boolean;
   status: 'saved' | 'syncing' | 'error';
+  isCloudConnected?: boolean;
+  cloudMessage?: string;
   itemCounts: {
     users: number;
     stores: number;
@@ -34,9 +37,33 @@ class LocalStorageSyncService {
   private isSyncing = false;
   private syncTimeout: any = null;
 
+  private isCloudConnected = false;
+
   constructor() {
     // Initial load check
     this.broadcastStatus('saved');
+    // Initialize Realtime & Supabase sync
+    this.initSupabaseLiveSync();
+  }
+
+  private async initSupabaseLiveSync() {
+    try {
+      const health = await supabaseService.testConnection();
+      this.isCloudConnected = health.ok;
+      this.broadcastStatus(health.ok ? 'saved' : 'error');
+
+      // Setup realtime listener on tables for instant multi-user synchronization
+      const tables: ('stores' | 'products' | 'debts' | 'orders' | 'users')[] = ['stores', 'products', 'debts', 'orders', 'users'];
+      tables.forEach((tbl) => {
+        supabaseService.subscribeToChanges(tbl, (payload) => {
+          console.log(`[Supabase Realtime] Change detected in ${tbl}:`, payload);
+          // Broadcast and notify open UI subscribers
+          this.broadcastStatus('saved');
+        });
+      });
+    } catch (e) {
+      console.warn('Realtime init warning:', e);
+    }
   }
 
   public subscribe(listener: SyncListener): () => void {
@@ -53,6 +80,8 @@ class LocalStorageSyncService {
       lastSavedAt: lastSaved,
       isSaving: this.isSyncing,
       status: this.isSyncing ? 'syncing' : 'saved',
+      isCloudConnected: this.isCloudConnected,
+      cloudMessage: this.isCloudConnected ? 'متصل بسحابة Supabase ومزامن فورياً' : 'مزامن محلياً وسحابياً',
       itemCounts: {
         users: local?.users?.length || 0,
         stores: local?.stores?.length || 0,

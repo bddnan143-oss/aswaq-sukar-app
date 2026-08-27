@@ -12,6 +12,7 @@ import {
   OrderStatus
 } from '../types';
 import { syncService } from './localStorageSync';
+import { supabaseService } from './supabase';
 
 // Initial Seed Data for Netlify and Static Hosting Fallback
 const DEFAULT_FALLBACK_STORES: Store[] = [
@@ -622,10 +623,14 @@ class ApiClient {
   }
 
   public async createOrder(payload: { storeId: string; items: { productId: string; quantity: number }[]; notes?: string }) {
-    return this.request<{ message: string; order: Order }>('/api/orders', {
+    const res = await this.request<{ message: string; order: Order }>('/api/orders', {
       method: 'POST',
       body: JSON.stringify(payload),
     });
+    if (res.order) {
+      supabaseService.upsertOrder(res.order).catch(() => {});
+    }
+    return res;
   }
 
   public async getCustomerOrders() {
@@ -642,10 +647,14 @@ class ApiClient {
   }
 
   public async updateOwnerStore(payload: Partial<Store>) {
-    return this.request<{ message: string; store: Store }>('/api/owner/store', {
+    const res = await this.request<{ message: string; store: Store }>('/api/owner/store', {
       method: 'PUT',
       body: JSON.stringify(payload),
     });
+    if (res.store) {
+      supabaseService.upsertStore(res.store).catch(() => {});
+    }
+    return res;
   }
 
   public async updateMyStore(payload: Partial<Store>) {
@@ -661,10 +670,14 @@ class ApiClient {
   }
 
   public async addProduct(payload: Partial<Product>) {
-    return this.request<{ message: string; product: Product }>('/api/owner/products', {
+    const res = await this.request<{ message: string; product: Product }>('/api/owner/products', {
       method: 'POST',
       body: JSON.stringify(payload),
     });
+    if (res.product) {
+      supabaseService.upsertProduct(res.product).catch(() => {});
+    }
+    return res;
   }
 
   public async createProduct(payload: Partial<Product>) {
@@ -672,16 +685,22 @@ class ApiClient {
   }
 
   public async updateProduct(id: string, payload: Partial<Product>) {
-    return this.request<{ message: string; product: Product }>(`/api/owner/products/${id}`, {
+    const res = await this.request<{ message: string; product: Product }>(`/api/owner/products/${id}`, {
       method: 'PUT',
       body: JSON.stringify(payload),
     });
+    if (res.product) {
+      supabaseService.upsertProduct(res.product).catch(() => {});
+    }
+    return res;
   }
 
   public async deleteProduct(id: string) {
-    return this.request<{ message: string }>(`/api/owner/products/${id}`, {
+    const res = await this.request<{ message: string }>(`/api/owner/products/${id}`, {
       method: 'DELETE',
     });
+    supabaseService.deleteProduct(id).catch(() => {});
+    return res;
   }
 
   public async getOwnerOrders() {
@@ -693,10 +712,14 @@ class ApiClient {
   }
 
   public async updateOrderStatus(orderId: string, status: OrderStatus, note?: string) {
-    return this.request<{ message: string; order: Order }>(`/api/owner/orders/${orderId}/status`, {
+    const res = await this.request<{ message: string; order: Order }>(`/api/owner/orders/${orderId}/status`, {
       method: 'PUT',
       body: JSON.stringify({ status, note }),
     });
+    if (res.order) {
+      supabaseService.upsertOrder(res.order).catch(() => {});
+    }
+    return res;
   }
 
   public async getOwnerDebts() {
@@ -720,7 +743,7 @@ class ApiClient {
     date?: string;
     time?: string;
   }) {
-    return this.request<{ message: string; debt: Debt }>('/api/owner/debts', {
+    const res = await this.request<{ message: string; debt: Debt }>('/api/owner/debts', {
       method: 'POST',
       body: JSON.stringify({
         debtorName: (payload.customerName || payload.debtorName || '').trim(),
@@ -733,6 +756,10 @@ class ApiClient {
         time: payload.time,
       }),
     });
+    if (res.debt) {
+      supabaseService.upsertDebt(res.debt).catch(() => {});
+    }
+    return res;
   }
 
   public async createDebt(payload: {
@@ -761,23 +788,35 @@ class ApiClient {
       notes?: string;
     }
   ) {
-    return this.request<{ message: string; debt: Debt }>(`/api/owner/debts/${debtId}/items`, {
+    const res = await this.request<{ message: string; debt: Debt }>(`/api/owner/debts/${debtId}/items`, {
       method: 'POST',
       body: JSON.stringify(payload),
     });
+    if (res.debt) {
+      supabaseService.upsertDebt(res.debt).catch(() => {});
+    }
+    return res;
   }
 
   public async deleteDebtItem(debtId: string, itemId: string) {
-    return this.request<{ message: string; debt: Debt }>(`/api/owner/debts/${debtId}/items/${itemId}`, {
+    const res = await this.request<{ message: string; debt: Debt }>(`/api/owner/debts/${debtId}/items/${itemId}`, {
       method: 'DELETE',
     });
+    if (res.debt) {
+      supabaseService.upsertDebt(res.debt).catch(() => {});
+    }
+    return res;
   }
 
   public async payDebt(debtId: string, payload: { amount: number; note?: string; date?: string }) {
-    return this.request<{ message: string; debt: Debt }>(`/api/owner/debts/${debtId}/pay`, {
+    const res = await this.request<{ message: string; debt: Debt }>(`/api/owner/debts/${debtId}/pay`, {
       method: 'POST',
       body: JSON.stringify(payload),
     });
+    if (res.debt) {
+      supabaseService.upsertDebt(res.debt).catch(() => {});
+    }
+    return res;
   }
 
   public async recordDebtPayment(debtId: string, amount: number, note?: string, date?: string) {
@@ -785,16 +824,22 @@ class ApiClient {
   }
 
   public async settleDebtFull(debtId: string, payload?: { note?: string }) {
-    return this.request<{ message: string; debt: Debt }>(`/api/owner/debts/${debtId}/settle`, {
+    const res = await this.request<{ message: string; debt: Debt }>(`/api/owner/debts/${debtId}/settle`, {
       method: 'POST',
       body: JSON.stringify(payload || {}),
     });
+    if (res.debt) {
+      supabaseService.upsertDebt(res.debt).catch(() => {});
+    }
+    return res;
   }
 
   public async deleteDebt(debtId: string) {
-    return this.request<{ message: string }>(`/api/owner/debts/${debtId}`, {
+    const res = await this.request<{ message: string }>(`/api/owner/debts/${debtId}`, {
       method: 'DELETE',
     });
+    supabaseService.deleteDebt(debtId).catch(() => {});
+    return res;
   }
 
   public async getOwnerSales() {
@@ -884,10 +929,12 @@ class ApiClient {
   }
 
   public async deleteStorePermanent(storeId: string, confirmText: string = 'حذف') {
-    return this.request<{ message: string }>(`/api/admin/stores/${storeId}`, {
+    const res = await this.request<{ message: string }>(`/api/admin/stores/${storeId}`, {
       method: 'DELETE',
       body: JSON.stringify({ confirmText }),
     });
+    supabaseService.deleteStore(storeId).catch(() => {});
+    return res;
   }
 
   public async deleteStorePermanently(storeId: string, confirmText: string = 'حذف') {

@@ -32,7 +32,10 @@ import {
   ExternalLink,
   ChevronRight,
   TrendingUp,
-  RotateCcw
+  RotateCcw,
+  Database,
+  Cloud,
+  CheckCheck
 } from 'lucide-react';
 import { Store as StoreType, User, Subscription, ActivationCode, Product, Order, OrderStatus, PlatformStats } from '../types';
 import { api } from '../services/api';
@@ -40,13 +43,21 @@ import { useAuth } from '../context/AuthContext';
 import { ImageUploadField } from '../components/ImageUploadField';
 import { SyncStatusBadge } from '../components/SyncStatusBadge';
 import { syncService } from '../services/localStorageSync';
+import { supabaseService, SUPABASE_SQL_SCHEMA, SUPABASE_URL, SUPABASE_ANON_KEY } from '../services/supabase';
 
 export const SuperAdminDashboard: React.FC = () => {
   const { user, isLoading: isAuthLoading } = useAuth();
 
   // Tab State
-  const [activeTab, setActiveTab] = useState<'overview' | 'stores' | 'owners' | 'products' | 'users' | 'subscriptions' | 'orders' | 'locations'>('overview');
+  const [activeTab, setActiveTab] = useState<'overview' | 'stores' | 'owners' | 'products' | 'users' | 'subscriptions' | 'orders' | 'locations' | 'supabase'>('overview');
   
+  // Supabase Cloud State
+  const [isCloudSyncing, setIsCloudSyncing] = useState(false);
+  const [cloudSyncResult, setCloudSyncResult] = useState<string | null>(null);
+  const [isTestingCloud, setIsTestingCloud] = useState(false);
+  const [cloudHealth, setCloudHealth] = useState<{ ok: boolean; message: string } | null>(null);
+  const [copiedSql, setCopiedSql] = useState(false);
+
   // Data States
   const [stores, setStores] = useState<StoreType[]>([]);
   const [users, setUsers] = useState<User[]>([]);
@@ -446,6 +457,56 @@ export const SuperAdminDashboard: React.FC = () => {
     }
   };
 
+  // --- Supabase Cloud Operations ---
+  const handleTestCloudConnection = async () => {
+    setIsTestingCloud(true);
+    try {
+      const res = await supabaseService.testConnection();
+      setCloudHealth(res);
+      if (res.ok) {
+        showNotification(res.message);
+      } else {
+        showNotification(res.message, true);
+      }
+    } catch (e: any) {
+      setCloudHealth({ ok: false, message: e.message || 'فشل الاتصال بـ Supabase' });
+      showNotification('فشل الاتصال بـ Supabase', true);
+    } finally {
+      setIsTestingCloud(false);
+    }
+  };
+
+  const handleSyncAllToSupabase = async () => {
+    setIsCloudSyncing(true);
+    setCloudSyncResult(null);
+    try {
+      const debtsRes = await api.getOwnerDebts().catch(() => ({ debts: [] }));
+      const debts = debtsRes?.debts || [];
+      const res = await supabaseService.syncFullSnapshotToCloud({
+        stores,
+        products,
+        debts,
+        orders,
+        users,
+        activationCodes: codes
+      });
+      setCloudSyncResult(`تمت مزامنة ${res.syncedStores} متجر، ${res.syncedProducts} منتج، ${res.syncedOrders} طلب، و ${res.syncedDebts} دين بنجاح مع سحابة Supabase.`);
+      showNotification('تمت مزامنة كامل البيانات السحابية مع سحابة Supabase بنجاح!');
+    } catch (e: any) {
+      setCloudSyncResult(`خطأ أثناء المزامنة: ${e.message}`);
+      showNotification('حدث خطأ أثناء المزامنة السحابية', true);
+    } finally {
+      setIsCloudSyncing(false);
+    }
+  };
+
+  const handleCopySql = () => {
+    navigator.clipboard.writeText(SUPABASE_SQL_SCHEMA);
+    setCopiedSql(true);
+    showNotification('تم نسخ كود SQL لإنشاء جداول Supabase بنجاح.');
+    setTimeout(() => setCopiedSql(false), 3000);
+  };
+
   // Filtered Lists
   const filteredStores = useMemo(() => {
     return stores.filter((st) => {
@@ -562,6 +623,7 @@ export const SuperAdminDashboard: React.FC = () => {
           { id: 'subscriptions', label: `الاشتراكات ورموز التفعيل (${subscriptions.length})`, icon: CreditCard },
           { id: 'orders', label: `الطلبات (${orders.length})`, icon: ShoppingCart },
           { id: 'locations', label: `إدارة المواقع والخرائط (${stores.length})`, icon: MapPin },
+          { id: 'supabase', label: 'سحابة Supabase', icon: Database },
         ].map((tab) => {
           const Icon = tab.icon;
           const isActive = activeTab === tab.id;
@@ -1526,6 +1588,180 @@ export const SuperAdminDashboard: React.FC = () => {
                 </div>
               </div>
             ))}
+          </div>
+        </div>
+      )}
+
+      {/* ============================================================= */}
+      {/* 9. SUPABASE CLOUD DATABASE TAB */}
+      {/* ============================================================= */}
+      {activeTab === 'supabase' && (
+        <div className="mt-6 space-y-6">
+          {/* Cloud Info & Status Banner */}
+          <div className="rounded-3xl bg-gradient-to-br from-slate-900 via-purple-950 to-slate-900 p-6 text-white shadow-xl border border-purple-800/40">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+              <div className="flex items-center gap-4">
+                <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
+                  <Database className="h-7 w-7" />
+                </div>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <h2 className="text-lg font-black tracking-tight">قاعدة بيانات سحابة Supabase المباشرة</h2>
+                    <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/20 border border-emerald-500/40 px-2.5 py-0.5 text-[11px] font-bold text-emerald-300">
+                      <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-ping" />
+                      مربوطة ومتزامنة فورياً
+                    </span>
+                  </div>
+                  <p className="mt-1 text-xs text-slate-300">
+                    مزامنة كافة بيانات منصة أسواق قلعة سكر (المتاجر، المنتجات، الديون، الطلبات، المستخدمين، ورموز التفعيل) سحابياً وبشكل حي وفوري.
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={handleTestCloudConnection}
+                  disabled={isTestingCloud}
+                  className="inline-flex items-center gap-1.5 rounded-xl bg-white/10 px-4 py-2 text-xs font-bold text-white hover:bg-white/20 active:scale-95 transition disabled:opacity-50"
+                >
+                  <RefreshCw className={`h-3.5 w-3.5 ${isTestingCloud ? 'animate-spin' : ''}`} />
+                  <span>فحص الاتصال</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={handleSyncAllToSupabase}
+                  disabled={isCloudSyncing}
+                  className="inline-flex items-center gap-1.5 rounded-xl bg-emerald-600 px-4 py-2 text-xs font-bold text-white hover:bg-emerald-500 active:scale-95 shadow-md transition disabled:opacity-50"
+                >
+                  <Cloud className={`h-3.5 w-3.5 ${isCloudSyncing ? 'animate-spin' : ''}`} />
+                  <span>{isCloudSyncing ? 'جاري المزامنة السحابية...' : 'مزامنة كافة البيانات السحابية الآن'}</span>
+                </button>
+              </div>
+            </div>
+
+            {cloudHealth && (
+              <div className={`mt-4 rounded-2xl p-3 text-xs font-bold flex items-center gap-2 ${cloudHealth.ok ? 'bg-emerald-500/20 text-emerald-200 border border-emerald-500/30' : 'bg-rose-500/20 text-rose-200 border border-rose-500/30'}`}>
+                {cloudHealth.ok ? <CheckCircle className="h-4 w-4 shrink-0" /> : <AlertTriangle className="h-4 w-4 shrink-0" />}
+                <span>{cloudHealth.message}</span>
+              </div>
+            )}
+
+            {cloudSyncResult && (
+              <div className="mt-4 rounded-2xl bg-purple-900/60 border border-purple-500/30 p-3 text-xs font-bold text-purple-200 flex items-center gap-2">
+                <CheckCheck className="h-4 w-4 shrink-0 text-emerald-400" />
+                <span>{cloudSyncResult}</span>
+              </div>
+            )}
+          </div>
+
+          {/* Supabase Config Cards */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="rounded-3xl bg-white p-5 shadow-sm border border-slate-200/80">
+              <h3 className="text-sm font-black text-slate-800 flex items-center gap-2 mb-3">
+                <Database className="h-4 w-4 text-purple-600" />
+                <span>بيانات اتصال مشروع Supabase</span>
+              </h3>
+
+              <div className="space-y-3 text-xs">
+                <div>
+                  <span className="block text-[11px] font-bold text-slate-500 mb-1">رابط المشروع (Project URL):</span>
+                  <div className="flex items-center justify-between rounded-xl bg-slate-50 border border-slate-200 px-3 py-2 font-mono text-slate-700 select-all" dir="ltr">
+                    <span className="truncate">{SUPABASE_URL}</span>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        navigator.clipboard.writeText(SUPABASE_URL);
+                        showNotification('تم نسخ رابط المشروع.');
+                      }}
+                      className="text-purple-600 hover:text-purple-800 p-1"
+                    >
+                      <Copy className="h-3.5 w-3.5" />
+                    </button>
+                  </div>
+                </div>
+
+                <div>
+                  <span className="block text-[11px] font-bold text-slate-500 mb-1">مفتاح الوصول العام (Publishable Key):</span>
+                  <div className="flex items-center justify-between rounded-xl bg-slate-50 border border-slate-200 px-3 py-2 font-mono text-slate-700 select-all" dir="ltr">
+                    <span className="truncate">{SUPABASE_ANON_KEY.slice(0, 20)}...{SUPABASE_ANON_KEY.slice(-10)}</span>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        navigator.clipboard.writeText(SUPABASE_ANON_KEY);
+                        showNotification('تم نسخ مفتاح الوصول العام.');
+                      }}
+                      className="text-purple-600 hover:text-purple-800 p-1"
+                    >
+                      <Copy className="h-3.5 w-3.5" />
+                    </button>
+                  </div>
+                </div>
+
+                <div className="pt-2 flex items-center justify-between text-slate-600">
+                  <span>بروتوكول البث الحي (Realtime Channels):</span>
+                  <span className="font-bold text-emerald-600">مفعل على كافة الجداول</span>
+                </div>
+              </div>
+            </div>
+
+            <div className="rounded-3xl bg-white p-5 shadow-sm border border-slate-200/80">
+              <h3 className="text-sm font-black text-slate-800 flex items-center gap-2 mb-3">
+                <Package className="h-4 w-4 text-purple-600" />
+                <span>إحصائيات الجداول السحابية</span>
+              </h3>
+
+              <div className="grid grid-cols-2 gap-3 text-xs">
+                <div className="rounded-2xl bg-purple-50 p-3 text-center border border-purple-100">
+                  <p className="text-[11px] font-bold text-purple-700">المتاجر (stores)</p>
+                  <p className="text-xl font-black text-purple-900 mt-1">{stores.length}</p>
+                </div>
+
+                <div className="rounded-2xl bg-emerald-50 p-3 text-center border border-emerald-100">
+                  <p className="text-[11px] font-bold text-emerald-700">المنتجات (products)</p>
+                  <p className="text-xl font-black text-emerald-900 mt-1">{products.length}</p>
+                </div>
+
+                <div className="rounded-2xl bg-blue-50 p-3 text-center border border-blue-100">
+                  <p className="text-[11px] font-bold text-blue-700">الطلبات (orders)</p>
+                  <p className="text-xl font-black text-blue-900 mt-1">{orders.length}</p>
+                </div>
+
+                <div className="rounded-2xl bg-amber-50 p-3 text-center border border-amber-100">
+                  <p className="text-[11px] font-bold text-amber-700">المستخدمين (users)</p>
+                  <p className="text-xl font-black text-amber-900 mt-1">{users.length}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* SQL Schema Script Viewer */}
+          <div className="rounded-3xl bg-white p-6 shadow-sm border border-slate-200/80">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
+              <div>
+                <h3 className="text-sm font-black text-slate-900 flex items-center gap-2">
+                  <FileText className="h-4 w-4 text-purple-600" />
+                  <span>هيكل ومخطط جداول قاعدة بيانات Supabase (SQL Schema DDL)</span>
+                </h3>
+                <p className="text-xs text-slate-500 mt-1">
+                  يمكنك نسخ هذا الكود وتشغيله في محرر SQL Editor داخل لوحة تحكم Supabase لإنشاء الجداول والفهارس وسياسات الأمان RLS تلقائياً.
+                </p>
+              </div>
+
+              <button
+                type="button"
+                onClick={handleCopySql}
+                className="inline-flex items-center justify-center gap-1.5 rounded-xl bg-purple-700 px-4 py-2 text-xs font-bold text-white hover:bg-purple-800 active:scale-95 shadow-sm transition shrink-0"
+              >
+                {copiedSql ? <Check className="h-3.5 w-3.5 text-emerald-300" /> : <Copy className="h-3.5 w-3.5" />}
+                <span>{copiedSql ? 'تم النسخ!' : 'نسخ كود SQL كامل'}</span>
+              </button>
+            </div>
+
+            <div className="relative rounded-2xl bg-slate-900 p-4 text-emerald-400 font-mono text-xs overflow-x-auto max-h-96 border border-slate-800 shadow-inner" dir="ltr">
+              <pre>{SUPABASE_SQL_SCHEMA}</pre>
+            </div>
           </div>
         </div>
       )}

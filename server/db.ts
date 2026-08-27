@@ -1,6 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import bcrypt from 'bcryptjs';
+import { serverSupabase } from './supabaseSync';
 import {
   User,
   Store,
@@ -682,6 +683,20 @@ class Database {
 
   constructor() {
     this.data = this.loadData();
+    // Hydrate and sync with Supabase cloud database in background
+    setTimeout(async () => {
+      try {
+        const cloudData = await serverSupabase.loadFromSupabase();
+        if (cloudData && Object.keys(cloudData).length > 0) {
+          this.mergeSnapshot(cloudData);
+        } else {
+          // Push initial dataset if Supabase is fresh
+          await serverSupabase.syncToSupabase(this.data);
+        }
+      } catch (err) {
+        console.warn('[Supabase Init] Background sync note:', err);
+      }
+    }, 1000);
   }
 
   public hashPassword(plain: string): string {
@@ -795,6 +810,8 @@ class Database {
 
   public save() {
     this.saveDataDirect(this.data);
+    // Push changes to Supabase cloud asynchronously
+    serverSupabase.syncToSupabase(this.data).catch(() => {});
   }
 
   public isSuperAdminInitialized(): boolean {
@@ -1121,6 +1138,7 @@ class Database {
     }
 
     this.save();
+    serverSupabase.deleteStoreCascade(storeId).catch(() => {});
     return true;
   }
 
